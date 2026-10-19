@@ -38,6 +38,7 @@ The repository is organized into three decoupled, production-grade components th
 * **Local Containerization:** Manages isolated development environments and backend services via `docker-compose`.
 * **Database Staging:** Provisions PostgreSQL containers with persistent volume mounts for local pipeline staging.
 * **Network Isolation:** Configures custom Docker bridge networks to enable communication between data ingest scripts and databases.
+* **LLM-Powered Anomaly Insights:** Integrates OpenAI and Anthropic APIs to inspect ingestion telemetry, detect data quality anomalies, and generate automated diagnostic summaries on irregular records.
 
 ### 2. [Terraform Cloud Infrastructure (`/terraform`)](./terraform)
 * **Infrastructure as Code (IaC):** Declarative GCP infrastructure management using HashiCorp Configuration Language (HCL).
