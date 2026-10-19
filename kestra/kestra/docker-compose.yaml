@@ -1,0 +1,94 @@
+volumes:
+  ny_taxi_postgres_data:
+    driver: local
+  kestra_postgres_data:
+    driver: local
+  kestra_data:
+    driver: local
+  kestra_tmp:
+    driver: local
+
+services:
+  pgdatabase:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: ny_taxi
+    ports:
+      - "5432:5432"
+    volumes:
+      - ny_taxi_postgres_data:/var/lib/postgresql
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=root
+    ports:
+      - "8085:80"
+    depends_on:
+      pgdatabase:
+        condition: service_started
+
+  kestra_postgres:
+    ports:
+      - "5433:5432"
+    image: postgres:18
+    volumes:
+      - kestra_postgres_data:/var/lib/postgresql
+    environment:
+      POSTGRES_DB: kestra
+      POSTGRES_USER: kestra
+      POSTGRES_PASSWORD: k3str4
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d kestra -U kestra"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  kestra:
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    network_mode: host
+    image: kestra/kestra:v1.1
+    env_file: .env
+    pull_policy: always
+    user: "root"
+    command: server standalone
+    restart: on-failure
+    volumes:
+      - kestra_data:/app/storage
+      - /var/run/docker.sock:/var/run/docker.sock
+      - kestra_tmp:/tmp/kestra-wd
+      - ./gcp-key.json:/app/gcp-key.json:ro
+    environment:
+      GOOGLE_APPLICATION_CREDENTIALS: /app/gcp-key.json
+      KESTRA_CONFIGURATION: |
+        datasources:
+          postgres:
+            url: jdbc:postgresql://localhost:5433/kestra
+            driverClassName: org.postgresql.Driver
+            username: kestra
+            password: k3str4
+        kestra:
+          server:
+            basicAuth:
+              username: "admin@kestra.io"
+              password: Admin1234!
+          repository:
+            type: postgres
+          storage:
+            type: local
+            local:
+              basePath: "/app/storage"
+          queue:
+            type: postgres
+          tasks:
+            tmpDir:
+              path: /tmp/kestra-wd/tmp
+      MICRONAUT_SERVER_HOST: "0.0.0.0"
+    depends_on:
+      kestra_postgres:
+        condition: service_healthy
