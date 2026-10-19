@@ -1,6 +1,6 @@
 # 🚀 AI-Powered Data Ingestion & Quality Audit Pipeline
 
-👉 **[View the Generated AI Audit Report (AI_INSIGHTS.md)](https://github.com/dhirajtripathi93/docker-workshop/blob/main/pipeline/AI_INSIGHTS.md)**
+👉 **[View the Generated AI Audit Report (AI_INSIGHTS.md)](https://github.com/dhirajtripathi93/docker/blob/main/docker/pipeline/AI_INSIGHTS.md)**
 
 ## 📌 Executive Summary
 A production-grade, containerized data ingestion pipeline designed to stream multi-million-row NYC TLC Taxi datasets into a PostgreSQL warehouse. This project integrates a pre-load AI validation framework utilizing **OpenAI** and **Anthropic** APIs to perform automated anomaly detection, generate executive audit reports, and output exploratory data visualizations.
