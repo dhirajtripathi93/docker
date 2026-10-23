@@ -18,6 +18,10 @@ renamed as (
         cast(store_and_fwd_flag as string) as store_and_fwd_flag,
         cast(passenger_count as integer) as passenger_count,
         cast(trip_distance as numeric) as trip_distance,
+        {{get_trip_duration_minutes(
+            'cast(tpep_pickup_datetime as timestamp)',
+            'cast(tpep_dropoff_datetime as timestamp)'
+        )}} as trip_duration_minutes,
 
         -- payment info
         cast(fare_amount as numeric) as fare_amount,
